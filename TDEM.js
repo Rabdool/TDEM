@@ -30,9 +30,8 @@ recordForm.addEventListener("submit", function (event) {
     }
 
     const total = test + exam;
-    const percentage = ((total / 100) * 100).toFixed(1);
 
-    records[currentClass].push({ name, test, exam, total, percentage });
+    records[currentClass].push({ name, test, exam, total });
     renderRecords();
 
     this.reset();
