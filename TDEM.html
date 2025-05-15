@@ -2,9 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>TDEM</title>
+    <title>TDEM - Teacher Data Examination Management</title>
+    <link rel="stylesheet" href="TDEM.css">
 </head>
 <body>
-    
+    <header>
+        <h1>Teacher Data Examination Management (TDEM)</h1>
+    </header>
+
+    <main>
+        <section id="class-selection">
+            <label for="classLevel">Select Class:</label>
+            <select id="classLevel">
+                <option value="pre-nursery">Pre-Nursery</option>
+                <option value="nursery-1">Nursery 1</option>
+                <option value="nursery-2">Nursery 2</option>
+            </select>
+        </section>
+
+        <section id="student-data">
+            <h2>Enter Student Record</h2>
+            <form id="recordForm">
+                <input type="text" id="studentName" placeholder="Student Name" required />
+                <input type="number" id="testScore" placeholder="Test Score" required />
+                <input type="number" id="examScore" placeholder="Exam Score" required />
+                <button type="submit">Save Record</button>
+            </form>
+        </section>
+
+        <section id="records">
+            <h2>Student Records</h2>
+            <ul id="recordsList"></ul>
+        </section>
+    </main>
+
+    <script src="TDEM.js"></script>
 </body>
 </html>
