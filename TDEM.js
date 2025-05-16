@@ -18,35 +18,43 @@ document.querySelectorAll(".tab-btn").forEach(button => {
 });
 
 recordForm.addEventListener("submit", function (event) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const name = document.getElementById("studentName").value.trim();
-    const test = parseInt(document.getElementById("testScore").value);
-    const exam = parseInt(document.getElementById("examScore").value);
+  const name = document.getElementById("studentName").value.trim();
+  const math = parseInt(document.getElementById("mathScore").value);
+  const english = parseInt(document.getElementById("englishScore").value);
+  const handwriting = parseInt(document.getElementById("handwritingScore").value);
+  const coloring = parseInt(document.getElementById("coloringScore").value);
 
-    if (test > 40 || exam > 60) {
-        alert("Test max is 40, Exam max is 60.");
-        return;
-    }
+  if (math > 25 || english > 25 || handwriting > 25 || coloring > 25) {
+    alert("Each subject must not exceed 25 marks.");
+    return;
+  }
 
-    const total = test + exam;
+  const total = math + english + handwriting + coloring;
 
-    records[currentClass].push({ name, test, exam, total });
-    renderRecords();
+  records[currentClass].push({
+    name, math, english, handwriting, coloring, total
+  });
 
-    this.reset();
+  renderRecords();
+  this.reset();
 });
 
 function renderRecords() {
-    recordsList.innerHTML = "";
-    records[currentClass].forEach(({ name, test, exam, total }) => {
-        const li = document.createElement("li");
-        li.innerHTML = `
-            <span class="font-medium">${name}</span> - 
-            Test: ${test}, Exam: ${exam}, Total: ${total}
-        `;
-        recordsList.appendChild(li);
-    });
+  recordsList.innerHTML = "";
+
+  records[currentClass].forEach(({ name, math, english, handwriting, coloring, total }) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <div class="mb-2">
+        <strong>${name}</strong><br />
+        Maths: ${math}, English: ${english}, Handwriting: ${handwriting}, Coloring: ${coloring}, 
+        <span class="font-medium">Total: ${total}</span>
+      </div>
+    `;
+    recordsList.appendChild(li);
+  });
 }
 
 document.querySelector('[data-class="pre-nursery"]').click();
