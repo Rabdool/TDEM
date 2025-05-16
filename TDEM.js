@@ -1,60 +1,67 @@
-let currentClass = "pre-nursery";
-const records = {
-    "pre-nursery": [],
-    "nursery-1": [],
-    "nursery-2": []
-};
+document.addEventListener("DOMContentLoaded", () => {
+  const classSelect = document.getElementById("classSelect");
+  const studentNameInput = document.getElementById("studentName");
+  const teacherInput = document.getElementById("teacherName");
+  const attendanceInput = document.getElementById("attendance");
 
-const recordForm = document.getElementById("recordForm");
-const recordsList = document.getElementById("recordsList");
+  const subjects = ["Maths", "English", "Handwriting", "Coloring"];
+  const subjectInputs = {};
 
-document.querySelectorAll(".tab-btn").forEach(button => {
-    button.addEventListener("click", () => {
-        currentClass = button.getAttribute("data-class");
-        renderRecords();
-        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("bg-blue-500", "text-white"));
-        button.classList.add("bg-blue-500", "text-white");
-    });
-});
+  subjects.forEach(subject => {
+    subjectInputs[subject] = document.getElementById(`${subject.toLowerCase()}Rating`);
+  });
 
-recordForm.addEventListener("submit", function (event) {
-  event.preventDefault();
+  const saveBtn = document.getElementById("saveRecord");
+  const recordList = document.getElementById("studentRecords");
 
-  const name = document.getElementById("studentName").value.trim();
-  const math = parseInt(document.getElementById("mathScore").value);
-  const english = parseInt(document.getElementById("englishScore").value);
-  const handwriting = parseInt(document.getElementById("handwritingScore").value);
-  const coloring = parseInt(document.getElementById("coloringScore").value);
+  const records = {
+    "Pre-Nursery": [],
+    "Nursery 1": [],
+    "Nursery 2": []
+  };
 
-  if (math > 25 || english > 25 || handwriting > 25 || coloring > 25) {
-    alert("Each subject must not exceed 25 marks.");
-    return;
+  function renderRecords() {
+    const currentClass = classSelect.value;
+    const entries = records[currentClass];
+
+    recordList.innerHTML = entries.map(record => {
+      const subjectRatings = subjects.map(sub => `${sub}: ${record.ratings[sub]}`).join(", ");
+      return `<li><strong>${record.name}</strong> - ${subjectRatings}</li>`;
+    }).join("");
   }
 
-  const total = math + english + handwriting + coloring;
+  saveBtn.addEventListener("click", () => {
+    const name = studentNameInput.value.trim();
+    const teacher = teacherInput.value.trim();
+    const attendance = attendanceInput.value.trim();
+    const currentClass = classSelect.value;
 
-  records[currentClass].push({
-    name, math, english, handwriting, coloring, total
+    if (!name) {
+      alert("Please enter student name.");
+      return;
+    }
+
+    const ratings = {};
+    for (const subject of subjects) {
+      const rating = subjectInputs[subject].value.toUpperCase();
+      if (!["A", "B", "C", "D", "E"].includes(rating)) {
+        alert(`Please enter a valid rating (A–E) for ${subject}.`);
+        return;
+      }
+      ratings[subject] = rating;
+    }
+
+    records[currentClass].push({
+      name,
+      ratings,
+      teacher,
+      attendance
+    });
+
+    studentNameInput.value = "";
+    subjects.forEach(subject => subjectInputs[subject].value = "");
+    renderRecords();
   });
 
-  renderRecords();
-  this.reset();
+  classSelect.addEventListener("change", renderRecords);
 });
-
-function renderRecords() {
-  recordsList.innerHTML = "";
-
-  records[currentClass].forEach(({ name, math, english, handwriting, coloring, total }) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <div class="mb-2">
-        <strong>${name}</strong><br />
-        Maths: ${math}, English: ${english}, Handwriting: ${handwriting}, Coloring: ${coloring}, 
-        <span class="font-medium">Total: ${total}</span>
-      </div>
-    `;
-    recordsList.appendChild(li);
-  });
-}
-
-document.querySelector('[data-class="pre-nursery"]').click();
