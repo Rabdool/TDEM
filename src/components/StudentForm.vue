@@ -34,6 +34,17 @@
       <p v-if="showError" class="mt-4 text-red-600 font-semibold text-center">
         Please fill in all fields.
       </p>
+
+      <p v-if="duplicateError" class="mt-4 text-red-600 font-semibold text-center">
+        A report for this student in this class already exists.
+      </p>
+
+      <router-link
+        to="/reports"
+        class="block text-center mt-6 text-blue-600 hover:underline"
+      >
+        View All Reports
+      </router-link>
     </form>
   </div>
 </template>
@@ -47,16 +58,46 @@ export default {
       teacherName: '',
       studentName: '',
       showError: false,
+      duplicateError: false,
     };
   },
   methods: {
     generateReport() {
+      this.showError = false;
+      this.duplicateError = false;
+
       if (!this.studentClass || !this.teacherName || !this.studentName) {
         this.showError = true;
         return;
       }
 
-      this.showError = false;
+      const allReports = JSON.parse(localStorage.getItem('allReports')) || [];
+
+      const duplicate = allReports.find(
+        (r) =>
+          r.name.toLowerCase() === this.studentName.toLowerCase() &&
+          r.class === this.studentClass
+      );
+
+      if (duplicate) {
+        this.duplicateError = true;
+        return;
+      }
+
+      const newReport = {
+        name: this.studentName,
+        class: this.studentClass,
+        teacher: this.teacherName,
+        subjects: [
+          { name: 'Maths', test: 0, exam: 0 },
+          { name: 'English', test: 0, exam: 0 },
+          { name: 'Handwriting', test: 0, exam: 0 },
+          { name: 'Coloring', test: 0, exam: 0 },
+        ],
+      };
+
+      allReports.push(newReport);
+      localStorage.setItem('allReports', JSON.stringify(allReports));
 
       this.$router.push({
         name: 'ReportCard',

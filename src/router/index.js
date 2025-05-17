@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import StudentForm from '../components/StudentForm.vue';
 import ReportCard from '../components/ReportCard.vue';
+import AllReports from '../components/AllReports.vue';
 
 const routes = [
   {
@@ -15,12 +16,10 @@ const routes = [
     props: true,
   },
   {
-  path: '/report-card/:className/:teacherName',
-  name: 'ReportCard',
-  component: ReportCard,
-  props: true
-}
-
+    path: '/reports',
+    name: 'AllReports',
+    component: AllReports,
+  },
 ];
 
 const router = createRouter({
