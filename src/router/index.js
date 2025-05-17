@@ -14,6 +14,13 @@ const routes = [
     component: ReportCard,
     props: true,
   },
+  {
+  path: '/report-card/:className/:teacherName',
+  name: 'ReportCard',
+  component: ReportCard,
+  props: true
+}
+
 ];
 
 const router = createRouter({
