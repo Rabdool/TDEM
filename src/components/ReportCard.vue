@@ -1,8 +1,10 @@
 <template>
   <div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
-    <h2 class="text-3xl font-bold mb-6 text-center">
-      Report Card for {{ studentName }}
-    </h2>
+    <h2 class="text-3xl font-bold mb-2 text-center">Report Card for {{ studentName }}</h2>
+    <p class="text-center mb-6">
+        Class: <strong>{{ studentClass }}</strong> |
+        Teacher: <strong>{{ teacherName }}</strong>
+    </p>
 
     <table class="w-full table-auto border-collapse border border-gray-300">
       <thead>
@@ -50,6 +52,14 @@
 <script>
 export default {
   props: ['studentName'],
+  computed: {
+    studentClass() {
+      return this.$route.query.class || 'N/A';
+    },
+    teacherName() {
+      return this.$route.query.teacher || 'N/A';
+    },
+  },
   data() {
     return {
       subjects: [
