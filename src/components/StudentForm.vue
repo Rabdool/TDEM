@@ -34,6 +34,13 @@
       <p v-if="showError" class="mt-4 text-red-600 font-semibold text-center">
         Please fill in all fields.
       </p>
+
+      <router-link
+        to="/reports"
+        class="block text-center mt-6 text-blue-600 hover:underline"
+      >
+        View All Reports
+      </router-link>
     </form>
   </div>
 </template>
@@ -57,6 +64,22 @@ export default {
       }
 
       this.showError = false;
+
+      const allReports = JSON.parse(localStorage.getItem('allReports')) || [];
+      const newReport = {
+        name: this.studentName,
+        class: this.studentClass,
+        teacher: this.teacherName,
+        subjects: [
+          { name: 'Maths', test: 0, exam: 0 },
+          { name: 'English', test: 0, exam: 0 },
+          { name: 'Handwriting', test: 0, exam: 0 },
+          { name: 'Coloring', test: 0, exam: 0 },
+        ],
+      };
+
+      allReports.push(newReport);
+      localStorage.setItem('allReports', JSON.stringify(allReports));
 
       this.$router.push({
         name: 'ReportCard',
