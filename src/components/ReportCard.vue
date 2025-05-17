@@ -28,8 +28,11 @@
               min="0"
               max="40"
               class="w-full p-1 border rounded"
-              @input="autoSave"
+              @input="handleInput(subject, 'test')"
             />
+            <p v-if="errors[`${subject.name}-test`]" class="text-red-600 text-xs mt-1">
+              {{ errors[`${subject.name}-test`] }}
+            </p>
           </td>
           <td class="border border-gray-300 p-2">
             <input
@@ -38,8 +41,11 @@
               min="0"
               max="60"
               class="w-full p-1 border rounded"
-              @input="autoSave"
+              @input="handleInput(subject, 'exam')"
             />
+            <p v-if="errors[`${subject.name}-exam`]" class="text-red-600 text-xs mt-1">
+              {{ errors[`${subject.name}-exam`] }}
+            </p>
           </td>
           <td class="border border-gray-300 p-2 text-center font-semibold">
             {{ subjectTotal(subject) }}
@@ -78,6 +84,7 @@ export default {
       ],
       studentClass: 'N/A',
       teacherName: 'N/A',
+      errors: {},
     };
   },
   mounted() {
@@ -89,8 +96,9 @@ export default {
       (r) => r.name === this.studentName && r.class === this.studentClass
     );
     if (existingReport) {
+      this.studentClass = existingReport.class;
       this.teacherName = existingReport.teacher;
-      this.subjects = existingReport.subjects;
+      this.subjects = JSON.parse(JSON.stringify(existingReport.subjects));
     }
   },
   methods: {
@@ -105,7 +113,40 @@ export default {
       if (total >= 50) return 'D';
       return 'E';
     },
+
+    validateScores() {
+      this.errors = {};
+      this.subjects.forEach((subj) => {
+        if (subj.test < 0 || subj.test > 40) {
+          this.errors[`${subj.name}-test`] = 'Test score must be between 0 and 40';
+        }
+        if (subj.exam < 0 || subj.exam > 60) {
+          this.errors[`${subj.name}-exam`] = 'Exam score must be between 0 and 60';
+        }
+      });
+      return Object.keys(this.errors).length === 0;
+    },
+
+    handleInput(subject, field) {
+      if (field === 'test') {
+        if (subject.test > 40) subject.test = 40;
+        if (subject.test < 0) subject.test = 0;
+      } else if (field === 'exam') {
+        if (subject.exam > 60) subject.exam = 60;
+        if (subject.exam < 0) subject.exam = 0;
+      }
+
+      if (this.validateScores()) {
+        this.autoSave();
+      }
+    },
+
     saveReport() {
+      if (!this.validateScores()) {
+        alert('Please fix errors before saving.');
+        return;
+      }
+
       const report = {
         name: this.studentName,
         class: this.studentClass,
@@ -114,7 +155,6 @@ export default {
       };
 
       const allReports = JSON.parse(localStorage.getItem('allReports')) || [];
-
       const index = allReports.findIndex(
         (r) => r.name === this.studentName && r.class === this.studentClass
       );
@@ -128,7 +168,12 @@ export default {
       localStorage.setItem('allReports', JSON.stringify(allReports));
       alert('Report saved!');
     },
+
     autoSave() {
+      if (!this.validateScores()) {
+        return;
+      }
+
       const report = {
         name: this.studentName,
         class: this.studentClass,
@@ -137,7 +182,6 @@ export default {
       };
 
       const allReports = JSON.parse(localStorage.getItem('allReports')) || [];
-
       const index = allReports.findIndex(
         (r) => r.name === this.studentName && r.class === this.studentClass
       );
