@@ -86,10 +86,9 @@ export default {
 
     const allReports = JSON.parse(localStorage.getItem('allReports')) || [];
     const existingReport = allReports.find(
-      (r) => r.name === this.studentName
+      (r) => r.name === this.studentName && r.class === this.studentClass
     );
     if (existingReport) {
-      this.studentClass = existingReport.class;
       this.teacherName = existingReport.teacher;
       this.subjects = existingReport.subjects;
     }
@@ -116,7 +115,10 @@ export default {
 
       const allReports = JSON.parse(localStorage.getItem('allReports')) || [];
 
-      const index = allReports.findIndex((r) => r.name === this.studentName);
+      const index = allReports.findIndex(
+        (r) => r.name === this.studentName && r.class === this.studentClass
+      );
+
       if (index !== -1) {
         allReports[index] = report;
       } else {
@@ -136,7 +138,10 @@ export default {
 
       const allReports = JSON.parse(localStorage.getItem('allReports')) || [];
 
-      const index = allReports.findIndex((r) => r.name === this.studentName);
+      const index = allReports.findIndex(
+        (r) => r.name === this.studentName && r.class === this.studentClass
+      );
+
       if (index !== -1) {
         allReports[index] = report;
       } else {
