@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TDEM - Student Input</title>
+  <link href="assets/tailwind.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+
+  <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-4 text-center">Enter Student Info</h1>
+    <form id="reportForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Select Class</label>
+        <select id="classLevel" class="w-full border rounded px-3 py-2">
+          <option value="">-- Choose Class --</option>
+          <option value="Pre-Nursery">Pre-Nursery</option>
+          <option value="Nursery 1">Nursery 1</option>
+          <option value="Nursery 2">Nursery 2</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Teacher Name</label>
+        <input type="text" id="teacherName" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium">Student Name</label>
+        <input type="text" id="studentName" class="w-full border rounded px-3 py-2" />
+      </div>
+
+      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+        Generate Report
+      </button>
+    </form>
+  </div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
