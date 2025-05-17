@@ -12,8 +12,8 @@
       <thead>
         <tr class="bg-gray-100">
           <th class="border border-gray-300 p-2">Subject</th>
-          <th class="border border-gray-300 p-2">Test (40)</th>
-          <th class="border border-gray-300 p-2">Exam (60)</th>
+          <th class="border border-gray-300 p-2">Test (40 max)</th>
+          <th class="border border-gray-300 p-2">Exam (60 max)</th>
           <th class="border border-gray-300 p-2">Total (100)</th>
           <th class="border border-gray-300 p-2">Rating</th>
         </tr>
@@ -24,21 +24,19 @@
           <td class="border border-gray-300 p-2">
             <input
               type="number"
-              v-model.number="subject.test"
+              :value="subject.test"
               min="0"
-              max="40"
               class="w-full p-1 border rounded"
-              @input="handleInput(subject, 'test')"
+              @input="limitDigits($event, subject, 'test')"
             />
           </td>
           <td class="border border-gray-300 p-2">
             <input
               type="number"
-              v-model.number="subject.exam"
+              :value="subject.exam"
               min="0"
-              max="60"
               class="w-full p-1 border rounded"
-              @input="handleInput(subject, 'exam')"
+              @input="limitDigits($event, subject, 'exam')"
             />
           </td>
           <td class="border border-gray-300 p-2 text-center font-semibold">
@@ -89,9 +87,8 @@ export default {
       (r) => r.name === this.studentName && r.class === this.studentClass
     );
     if (existingReport) {
-      this.studentClass = existingReport.class;
       this.teacherName = existingReport.teacher;
-      this.subjects = JSON.parse(JSON.stringify(existingReport.subjects));
+      this.subjects = existingReport.subjects;
     }
   },
   methods: {
@@ -106,30 +103,28 @@ export default {
       if (total >= 50) return 'D';
       return 'E';
     },
+    limitDigits(event, subject, field) {
+      let val = event.target.value;
 
+      // Remove non-digits and limit to 2 digits max
+      val = val.replace(/\D/g, '').slice(0, 2);
+
+      event.target.value = val;
+      subject[field] = val === '' ? 0 : Number(val);
+
+      this.autoSaveIfValid();
+    },
     validateScores() {
-      return this.subjects.every(
-        (subj) => subj.test >= 0 && subj.test <= 40 && subj.exam >= 0 && subj.exam <= 60
-      );
-    },
-
-    handleInput(subject, field) {
-      if (field === 'test') {
-        if (subject.test > 40) subject.test = 40;
-        if (subject.test < 0) subject.test = 0;
-      } else if (field === 'exam') {
-        if (subject.exam > 60) subject.exam = 60;
-        if (subject.exam < 0) subject.exam = 0;
+      for (const subject of this.subjects) {
+        if (subject.test > 40 || subject.exam > 60) {
+          return false;
+        }
       }
-
-      if (this.validateScores()) {
-        this.autoSave();
-      }
+      return true;
     },
-
     saveReport() {
       if (!this.validateScores()) {
-        alert('Cannot save report: Test scores must be ≤ 40 and Exam scores must be ≤ 60.');
+        alert('Please ensure all test scores are ≤ 40 and exam scores are ≤ 60 before saving.');
         return;
       }
 
@@ -144,20 +139,19 @@ export default {
       const index = allReports.findIndex(
         (r) => r.name === this.studentName && r.class === this.studentClass
       );
-
       if (index !== -1) {
         allReports[index] = report;
       } else {
         allReports.push(report);
       }
-
       localStorage.setItem('allReports', JSON.stringify(allReports));
-      alert('Report saved successfully!');
+      alert('Report saved!');
     },
-
-    autoSave() {
-      if (!this.validateScores()) return;
-
+    autoSaveIfValid() {
+      if (!this.validateScores()) {
+        // Don't auto-save if invalid scores
+        return;
+      }
       const report = {
         name: this.studentName,
         class: this.studentClass,
@@ -169,13 +163,11 @@ export default {
       const index = allReports.findIndex(
         (r) => r.name === this.studentName && r.class === this.studentClass
       );
-
       if (index !== -1) {
         allReports[index] = report;
       } else {
         allReports.push(report);
       }
-
       localStorage.setItem('allReports', JSON.stringify(allReports));
     },
   },
