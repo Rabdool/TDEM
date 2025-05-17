@@ -30,9 +30,6 @@
               class="w-full p-1 border rounded"
               @input="handleInput(subject, 'test')"
             />
-            <p v-if="errors[`${subject.name}-test`]" class="text-red-600 text-xs mt-1">
-              {{ errors[`${subject.name}-test`] }}
-            </p>
           </td>
           <td class="border border-gray-300 p-2">
             <input
@@ -43,9 +40,6 @@
               class="w-full p-1 border rounded"
               @input="handleInput(subject, 'exam')"
             />
-            <p v-if="errors[`${subject.name}-exam`]" class="text-red-600 text-xs mt-1">
-              {{ errors[`${subject.name}-exam`] }}
-            </p>
           </td>
           <td class="border border-gray-300 p-2 text-center font-semibold">
             {{ subjectTotal(subject) }}
@@ -84,7 +78,6 @@ export default {
       ],
       studentClass: 'N/A',
       teacherName: 'N/A',
-      errors: {},
     };
   },
   mounted() {
@@ -115,16 +108,9 @@ export default {
     },
 
     validateScores() {
-      this.errors = {};
-      this.subjects.forEach((subj) => {
-        if (subj.test < 0 || subj.test > 40) {
-          this.errors[`${subj.name}-test`] = 'Test score must be between 0 and 40';
-        }
-        if (subj.exam < 0 || subj.exam > 60) {
-          this.errors[`${subj.name}-exam`] = 'Exam score must be between 0 and 60';
-        }
-      });
-      return Object.keys(this.errors).length === 0;
+      return this.subjects.every(
+        (subj) => subj.test >= 0 && subj.test <= 40 && subj.exam >= 0 && subj.exam <= 60
+      );
     },
 
     handleInput(subject, field) {
@@ -143,7 +129,7 @@ export default {
 
     saveReport() {
       if (!this.validateScores()) {
-        alert('Please fix errors before saving.');
+        alert('Cannot save report: Test scores must be ≤ 40 and Exam scores must be ≤ 60.');
         return;
       }
 
@@ -166,13 +152,11 @@ export default {
       }
 
       localStorage.setItem('allReports', JSON.stringify(allReports));
-      alert('Report saved!');
+      alert('Report saved successfully!');
     },
 
     autoSave() {
-      if (!this.validateScores()) {
-        return;
-      }
+      if (!this.validateScores()) return;
 
       const report = {
         name: this.studentName,
